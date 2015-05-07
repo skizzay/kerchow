@@ -26,3 +26,18 @@
 *.exe
 *.out
 *.app
+
+# Editor temporary files
+*~
+.*.sw?
+.ycm_extra_conf.py
+.ycm_extra_conf.pyc
+
+# BiiCode files and directories
+bin/
+bii/.hive.db
+bii/build/
+bii/cmake/
+bii/deps/
+bii/policies.bii
+bii/settings.bii
