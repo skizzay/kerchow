@@ -8,18 +8,6 @@ namespace {
 
 using namespace kerchow;
 
-void seed_rng() {
-   unsigned int seed = ::testing::GTEST_FLAG(random_seed);
-   if (seed == 0) {
-      random_seed.reset_within_range(1U, 99999U);
-      ::testing::GTEST_FLAG(random_seed) = random_seed.value();
-   }
-   else {
-      random_seed.update(seed);
-   }
-   picker.reseed();
-}
-
 
 TEST(fuzzy_number_tests, uniform_distribution_provides_valid_range) {
    // Arrange
@@ -35,7 +23,7 @@ TEST(fuzzy_number_tests, uniform_distribution_provides_valid_range) {
 
 TEST(fuzzy_container_tests, size_given_initialized_container_should_use_size_of_initialized_values) {
    // Arrange
-   fuzzy_container<const char *> target{{"hello", "world"}};
+   auto target = picker.create_fuzzy_container<const char *>({"hello", "world"});
    size_t expected = 2;
 
    // Act
@@ -48,7 +36,7 @@ TEST(fuzzy_container_tests, size_given_initialized_container_should_use_size_of_
 
 TEST(fuzzy_container_tests, size_given_specified_iteration_count_should_use_iteration_count) {
    // Arrange
-   fuzzy_container<const char *> target{{"hello", "world"}};
+   auto target = picker.create_fuzzy_container<const char *>({"hello", "world"});
    size_t expected = picker.pick<size_t>();
    target.set_iteration_count(expected);
 
@@ -62,7 +50,7 @@ TEST(fuzzy_container_tests, size_given_specified_iteration_count_should_use_iter
 
 TEST(fuzzy_container_tests, size_after_pushing_should_be_incremented_by_1) {
    // Arrange
-   fuzzy_container<const char *> target{{"hello", "world"}};
+   auto target = picker.create_fuzzy_container<const char *>({"hello", "world"});
    size_t expected = target.size() + 1;
    target.push("blammo");
 
@@ -76,7 +64,7 @@ TEST(fuzzy_container_tests, size_after_pushing_should_be_incremented_by_1) {
 
 TEST(fuzzy_container_tests, size_after_emplacing_should_be_incremented_by_1) {
    // Arrange
-   fuzzy_container<const char *> target{{"hello", "world"}};
+   auto target = picker.create_fuzzy_container<const char *>({"hello", "world"});
    size_t expected = target.size() + 1;
    target.emplace("blammo");
 
@@ -90,7 +78,7 @@ TEST(fuzzy_container_tests, size_after_emplacing_should_be_incremented_by_1) {
 
 TEST(fuzzy_container_tests, empty_given_no_iteration_count_should_be_true) {
    // Arrange
-   fuzzy_container<const char *> target{{"hello", "world"}};
+   auto target = picker.create_fuzzy_container<const char *>({"hello", "world"});
    bool expected = true;
    target.set_iteration_count(0);
 
@@ -104,7 +92,7 @@ TEST(fuzzy_container_tests, empty_given_no_iteration_count_should_be_true) {
 
 TEST(fuzzy_container_tests, empty_given_an_iteration_count_should_be_false) {
    // Arrange
-   fuzzy_container<const char *> target{{"hello", "world"}};
+   auto target = picker.create_fuzzy_container<const char *>({"hello", "world"});
    bool expected = false;
    target.set_iteration_count(picker.pick<size_t>(1));
 
@@ -119,7 +107,7 @@ TEST(fuzzy_container_tests, empty_given_an_iteration_count_should_be_false) {
 TEST(fuzzy_container_tests, iteration_over_container_iterates_the_size_of_container) {
    // Arrange
    std::vector<const char *> values{{"hello", "world", "car", "boot", "run", "jump"}};
-   fuzzy_container<const char *> target(std::begin(values), std::end(values));
+   auto target = picker.create_fuzzy_container<const char *>(std::begin(values), std::end(values));
    size_t expected = picker.pick<size_t>(target.size(), 3 * target.size());
    target.set_iteration_count(expected);
    size_t actual = 0;
@@ -139,6 +127,5 @@ TEST(fuzzy_container_tests, iteration_over_container_iterates_the_size_of_contai
 
 int main(int argc, char **argv) {
    ::testing::InitGoogleTest(&argc, argv);
-   seed_rng();
    return RUN_ALL_TESTS();
 }

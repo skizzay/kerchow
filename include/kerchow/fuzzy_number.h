@@ -2,7 +2,7 @@
 #ifndef KERCHOW_FUZZY_NUMBER_H__
 #define KERCHOW_FUZZY_NUMBER_H__
 
-#include "kerchow/random_seed.h"
+#include "kerchow/uniform_distribution.h"
 #include <complex>
 
 namespace kerchow {
@@ -18,15 +18,9 @@ public:
    typedef typename generator_type::result_type seed_type;
 
    template<class... DistributionArgs>
-   inline fuzzy_number(seed_type seed, DistributionArgs ...distribution_args) :
-      generator{seed},
+   inline fuzzy_number(generator_type &g, DistributionArgs ...distribution_args) :
+      generator{g},
       distribution{distribution_args...}
-   {
-   }
-
-   template<class... DistributionArgs>
-   inline fuzzy_number(DistributionArgs ...distribution_args) :
-      fuzzy_number{static_cast<seed_type>(random_seed.value()), distribution_args...}
    {
    }
 
@@ -44,45 +38,8 @@ public:
 
 private:
    distribution_type distribution;
-   generator_type generator;
+   generator_type &generator;
 };
-
-
-#if 0
-template<class ArithmeticType, class DistributionType, class GeneratorType>
-class fuzzy_number<std::complex<ArithmeticType>, DistributionType, GeneratorType> {
-public:
-   typedef DistributionType distribution_type;
-   typedef GeneratorType generator_type;
-   typedef typename distribution_type::result_type std::complex<ArithmeticType>;
-   typedef typename generator_type::result_type seed_type;
-
-   template<class... DistributionArgs>
-   inline fuzzy_number(seed_type seed, DistributionArgs ...distribution_args) :
-      generator{seed},
-      distribution{distribution_args...}
-   {
-   }
-
-   template<class... DistributionArgs>
-   inline fuzzy_number(DistributionArgs ...distribution_args) :
-      fuzzy_number{static_cast<seed_type>(random_seed.value()), distribution_args...}
-   {
-   }
-
-   inline result_type next() {
-      return {distribution(generator), distribution(generator)};
-   }
-
-   inline operator result_type() {
-      return next();
-   }
-
-private:
-   distribution_type distribution;
-   generator_type generator;
-};
-#endif
 
 }
 
