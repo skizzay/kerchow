@@ -123,9 +123,3 @@ TEST(fuzzy_container_tests, iteration_over_container_iterates_the_size_of_contai
 }
 
 }
-
-
-int main(int argc, char **argv) {
-   ::testing::InitGoogleTest(&argc, argv);
-   return RUN_ALL_TESTS();
-}

@@ -1,0 +1,7 @@
+ADD_EXECUTABLE(kerchow_tests main.cpp)
+IF(APPLE)
+    TARGET_COMPILE_OPTIONS(kerchow_tests PRIVATE "-std=c++11 -stdlib=libc++")
+ELSEIF (WIN32 OR UNIX)
+    TARGET_COMPILE_OPTIONS(kerchow_tests PRIVATE "-std=c++11")
+ENDIF(APPLE)
+TARGET_LINK_LIBRARIES(kerchow_tests kerchow ${CONAN_LIBS_GTEST})
