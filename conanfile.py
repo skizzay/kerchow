@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake
+from os.path import join
 
 class Kerchow(ConanFile):
     name = "kerchow"
@@ -7,7 +8,8 @@ class Kerchow(ConanFile):
     settings = "arch", "os", "build_type", "compiler"
     generators = "cmake"
     options = {"build_tests": [True, False], "shared": [True, False]}
-    default_options = "build_tests=True", "shared=True"
+    default_options = "build_tests=False", "shared=True"
+    exports = "CMakeLists.txt", "src/*", "include/*", "tests/*"
 
     def requirements(self):
         if self.options.build_tests:
@@ -21,6 +23,28 @@ class Kerchow(ConanFile):
         cmake = CMake(self.settings)
         self.run("cmake . %s %s" % (self._extra_cmake_defines, cmake.command_line))
         self.run("cmake --build . %s" % cmake.build_config)
+        if self.options.build_tests:
+            self.run("ctest")
+
+    def package(self):
+        # Copying headers
+        self.copy(pattern="*.h", dst=join("include", "kerchow"), src=join("include", "kerchow"))
+
+        # Copying static and dynamic libs
+        self.copy(pattern="*.a", dst="lib", src=".", keep_path=False)
+        self.copy(pattern="*.lib", dst="lib", src=".", keep_path=False)
+        self.copy(pattern="*.dll", dst="bin", src=".", keep_path=False)
+        self.copy(pattern="*.so*", dst="lib", src=".", keep_path=False)
+        self.copy(pattern="*.dylib*", dst="lib", src=".", keep_path=False)      
+
+        # Copying tests
+        if self.options.build_tests:
+            self.copy(pattern="kerchow_tests", dst="bin", src="bin", keep_path=False)      
+
+    def package_info(self):
+        self.cpp_info.includedirs = ["include"]
+        self.cpp_info.libs = ["kerchow"]
+        self.cpp_info.cppflags = ["-std=c++11"]
 
     @property
     def _build_tests_flag(self):

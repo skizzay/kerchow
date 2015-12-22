@@ -36,3 +36,6 @@
 # conan files and directories
 conanfile.pyc
 conanbuildinfo.cmake
+build/
+Debug/
+Release/
