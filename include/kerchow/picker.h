@@ -104,6 +104,9 @@ public:
 
       ArithmeticType a = pick(low, high);
       ArithmeticType b = pick(low, high);
+      while (b == a) {
+         b = pick(low, high);
+      }
 
       return fuzzy_number<ArithmeticType>{generator, std::min(a, b), std::max(a, b)};
    }
@@ -148,7 +151,7 @@ public:
    }
 
    inline double entropy() const noexcept {
-      generator.entropy();
+      return generator.entropy();
    }
 
    template<class ArithmeticType>

@@ -18,14 +18,12 @@ inline unsigned int generate_seed_for_picker() {
       }
    }
 
-#ifdef __linux__
-# ifndef KERCHOW_USE_DEV_RANDOM
+#if defined(KERCHOW_USE_DEV_URANDOM)
    std::random_device generator{"/dev/urandom"};
-#  else
+#elif defined(KERCHOW_USE_DEV_RANDOM)
    std::random_device generator{"/dev/random"};
-#  endif
 #else
-   std::random_device generator{"/dev/urandom"};
+   std::random_device generator;
 #endif
 
    return generator();
