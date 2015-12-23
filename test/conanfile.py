@@ -3,9 +3,13 @@ from os.path import join
 
 class KerchowPackageTest(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
-    requires = "kerchow/1.0@skizzay/testing"
+    requires = "kerchow/1.0.1@skizzay/testing"
     generators = "cmake"
-    default_options = "kerchow:build_tests=True"
+    options = {"shared": [False, True]}
+    default_options = "shared=False", "kerchow:build_tests=True"
+
+    def config(self):
+        self.options["kerchow"].shared = self.options.shared
 
     def imports(self):
         self.copy("kerchow_tests", src="bin", dst="bin")

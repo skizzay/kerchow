@@ -12,9 +12,9 @@ ADD_LIBRARY(${KERCHOW_TARGET} src/kerchow/picker.cpp)
 
 # TODO: Find better way for supporting c++11
 IF(APPLE)
-    TARGET_COMPILE_OPTIONS(${KERCHOW_TARGET} PUBLIC "-std=c++11 -stdlib=libc++")
+    TARGET_COMPILE_OPTIONS(${KERCHOW_TARGET} PUBLIC -std=c++11 -stdlib=libc++ -Wall -Wextra -Werror)
 ELSEIF (WIN32 OR UNIX)
-    TARGET_COMPILE_OPTIONS(${KERCHOW_TARGET} PUBLIC "-std=c++11")
+    TARGET_COMPILE_OPTIONS(${KERCHOW_TARGET} PUBLIC -std=c++11 -Wall -Wextra -Werror)
 ENDIF()
 
 # Try to use something that generates fairly decent entropy

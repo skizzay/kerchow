@@ -1,9 +1,12 @@
 from conans import ConanFile, CMake
-from os.path import join
+from os.path import dirname, abspath, join
+
+def _this_directory():
+    return dirname(abspath(__file__))
 
 class Kerchow(ConanFile):
     name = "kerchow"
-    version = "1.0"
+    version = "1.0.1"
     url = "https://github.com/skizzay/kerchow.git"
     settings = "arch", "os", "build_type", "compiler"
     generators = "cmake"
@@ -21,7 +24,7 @@ class Kerchow(ConanFile):
 
     def build(self):
         cmake = CMake(self.settings)
-        self.run("cmake . %s %s" % (self._extra_cmake_defines, cmake.command_line))
+        self.run("cmake %s %s %s" % (_this_directory(), self._extra_cmake_defines, cmake.command_line))
         self.run("cmake --build . %s" % cmake.build_config)
         if self.options.build_tests:
             self.run("ctest")
@@ -44,7 +47,6 @@ class Kerchow(ConanFile):
     def package_info(self):
         self.cpp_info.includedirs = ["include"]
         self.cpp_info.libs = ["kerchow"]
-        self.cpp_info.cppflags = ["-std=c++11"]
 
     @property
     def _build_tests_flag(self):

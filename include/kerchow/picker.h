@@ -100,7 +100,6 @@ public:
    fuzzy_number<ArithmeticType> create_fuzzy_number(ArithmeticType low=std::numeric_limits<ArithmeticType>::min(),
                                                     ArithmeticType high=std::numeric_limits<ArithmeticType>::max()) {
       assert((low < high) && "Low must strictly be less than high.");
-      typedef typename fuzzy_number<ArithmeticType>::result_type fuzzy_seed_type;
 
       ArithmeticType a = pick(low, high);
       ArithmeticType b = pick(low, high);

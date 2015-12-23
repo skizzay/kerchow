@@ -37,8 +37,8 @@ public:
    }
 
 private:
-   distribution_type distribution;
    generator_type &generator;
+   distribution_type distribution;
 };
 
 }
