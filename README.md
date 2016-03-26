@@ -50,3 +50,54 @@ double random_value() {
 ```
 
 The underlying generator can be seeded with the system default seed, a seed sequence, or if the generator is a random device, then a token (which takes on different meanings for each system).  You can reseed the instance at anytime as according to the random number engine concept.  The global instance, `picker`, is automatically seeded at application startup.  The seed will be generated using the source of most entropy available on the system.  This is typically `/dev/urandom` or `/dev/random` if those are available.  If you need reproducibility, then you can start your application with the `KERCHOW_SEED` environment variable set to an unsigned integer.
+
+## fuzzy_number
+The `fuzzy_number` class template will be most useful for Monte Carlo scenarios.  Its designed to be a drop in replacement for a [random variable](https://en.wikipedia.org/wiki/Random_variable).  From the above dice examples, we can represent a single die with a `fuzzy_number`.
+```cpp
+#include <kerchow/kerchow.h>
+
+typedef kerchow::fuzzy_number<size_t, std::uniform_distribution<size_t>, kerchow::random_picker> game_die;
+
+class game_piece {
+  // ...
+  void move(size_t num_spaces);
+};
+
+class game {
+  std::vector<game_piece> pieces;
+  game_die die;
+  // ...
+  game(size_t num_players) :
+    pieces(num_players),
+    die(kerchow::picker, 1, 6)
+    // ...
+  {
+  }
+  
+  void next_round() {
+    for (game_piece &piece : pieces) {
+      piece.move(die);
+    }
+  }
+  
+  // ...
+};
+```
+
+For modelling a particular stock in the market, you can use a fuzzy number to represent the Brownian motion.
+```cpp
+#include <kerchow/kerchow.h>
+
+typedef kerchow::fuzzy_number<double, std::lognormal_distribution<double>, kerchow::random_picker> brownian_motion;
+
+template<class OutputIterator>
+inline void populate_values(size_t num_values, double initial_value, OutputIterator i, brownian_motion &w) {
+  assert(num_values > 0);
+  double current_value = initial_value;
+  while (--num_values) {
+    current_value *= w.next();
+    *i = current_value;
+    ++i;
+  }
+}
+```
