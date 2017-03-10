@@ -55,8 +55,13 @@ public:
       return generator_type::max();
    }
 
-   void seed(result_type seed) {
+   inline void seed(result_type seed) {
       generator.seed(seed);
+   }
+
+   template<class Sseq>
+   inline void seed(Sseq &seq) {
+      generator.seed(seq);
    }
 
    inline result_type operator()() {
@@ -190,6 +195,9 @@ public:
 
       ArithmeticType a = pick(low, high);
       ArithmeticType b = pick(low, high);
+      while (b == a) {
+         b = pick(low, high);
+      }
 
       return fuzzy_number<ArithmeticType>{pick<fuzzy_seed_type>(), std::min(a, b), std::max(a, b)};
    }
