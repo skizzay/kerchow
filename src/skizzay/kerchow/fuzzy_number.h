@@ -1,10 +1,9 @@
-// vim: sw=3 ts=3 expandtab smartindent autoindent cindent
-#ifndef KERCHOW_FUZZY_NUMBER_H__
-#define KERCHOW_FUZZY_NUMBER_H__
+#pragma once
 
-#include "kerchow/uniform_distribution.h"
+#include "skizzay/kerchow/uniform_distribution.h"
 #include <complex>
 
+namespace skizzay {
 namespace kerchow {
 
 template<class ArithmeticType,
@@ -42,5 +41,4 @@ private:
 };
 
 }
-
-#endif
+}

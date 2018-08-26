@@ -1,11 +1,10 @@
-// vim: sw=3 ts=3 expandtab smartindent autoindent cindent
-#ifndef KERCHOW_FUZZY_CONTAINER_H__
-#define KERCHOW_FUZZY_CONTAINER_H__
+#pragma once
 
-#include "kerchow/uniform_distribution.h"
+#include "skizzay/kerchow/uniform_distribution.h"
 #include <cassert>
 #include <vector>
 
+namespace skizzay {
 namespace kerchow {
 
 template<class, class=std::mt19937_64> class fuzzy_container;
@@ -184,5 +183,4 @@ void fuzzy_iterator<T, G>::next() {
 }
 
 }
-
-#endif
+}

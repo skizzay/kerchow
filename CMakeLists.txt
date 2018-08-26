@@ -1,31 +1,10 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1)
 
-SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-INCLUDE(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-CONAN_BASIC_SETUP()
+include_directories("${CMAKE_SOURCE_DIR}/src")
 
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/include")
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
-SET(KERCHOW_TARGET kerchow)
-ADD_LIBRARY(${KERCHOW_TARGET} src/kerchow/picker.cpp)
-
-# TODO: Find better way for supporting c++11
-IF(APPLE)
-    TARGET_COMPILE_OPTIONS(${KERCHOW_TARGET} PUBLIC -std=c++11 -stdlib=libc++ -Wall -Wextra -Werror)
-ELSEIF (WIN32 OR UNIX)
-    TARGET_COMPILE_OPTIONS(${KERCHOW_TARGET} PUBLIC -std=c++11 -Wall -Wextra -Werror)
-ENDIF()
-
-# Try to use something that generates fairly decent entropy
-IF (EXISTS /dev/urandom)
-    TARGET_COMPILE_DEFINITIONS(${KERCHOW_TARGET} PRIVATE KERCHOW_USE_DEV_URANDOM)
-ELSEIF (EXISTS /dev/random)
-    TARGET_COMPILE_DEFINITIONS(${KERCHOW_TARGET} PRIVATE KERCHOW_USE_DEV_RANDOM)
-ENDIF()
-
-IF (BUILD_TESTS)
-    ENABLE_TESTING()
-    ADD_SUBDIRECTORY(tests)
-    ADD_TEST(kerchow_tests bin/kerchow_tests)
-ENDIF()
+add_subdirectory("src")

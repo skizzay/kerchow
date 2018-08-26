@@ -1,61 +1,37 @@
 from conans import ConanFile, CMake
-from os.path import dirname, abspath, join
+from conans.errors import ConanException
 
-def _this_directory():
-    return dirname(abspath(__file__))
 
-class Kerchow(ConanFile):
+class KerchowConan(ConanFile):
     name = "kerchow"
-    version = "1.0.1"
-    url = "https://github.com/skizzay/kerchow.git"
-    settings = "arch", "os", "build_type", "compiler"
+    version = "2.0.0"
+    license = "MIT"
+    url = "https://github.com/skizzay/kerchow"
+    description = "A library of data structures to simplify fuzz-testing"
+    settings = "cppstd", "os", "compiler", "build_type", "arch"
+    options = {"shared": [True, False]}
+    default_options = "shared=False"
+    build_requires = "cmake_installer/3.11.2@conan/stable"
     generators = "cmake"
-    options = {"build_tests": [True, False], "shared": [True, False]}
-    default_options = "build_tests=False", "shared=True"
-    exports = "CMakeLists.txt", "src/*", "include/*", "tests/*"
+    exports_sources = "CMakeLists.txt", "src/*"
 
-    def requirements(self):
-        if self.options.build_tests:
-            self.requires("gtest/1.7.0@lasote/stable")
-
-    def config(self):
-        if self.options.build_tests:
-            self.options["gtest"].shared = self.options.shared
+    def configure(self):
+        if self.settings.cppstd in ["98", "gnu98"]:
+            raise ConanException("kerchow is not C++98 compatible")
 
     def build(self):
-        cmake = CMake(self.settings)
-        self.run("cmake %s %s %s" % (_this_directory(), self._extra_cmake_defines, cmake.command_line))
-        self.run("cmake --build . %s" % cmake.build_config)
-        if self.options.build_tests:
-            self.run("ctest")
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
 
     def package(self):
-        # Copying headers
-        self.copy(pattern="*.h", dst=join("include", "kerchow"), src=join("include", "kerchow"))
-
-        # Copying static and dynamic libs
-        self.copy(pattern="*.a", dst="lib", src=".", keep_path=False)
-        self.copy(pattern="*.lib", dst="lib", src=".", keep_path=False)
-        self.copy(pattern="*.dll", dst="bin", src=".", keep_path=False)
-        self.copy(pattern="*.so*", dst="lib", src=".", keep_path=False)
-        self.copy(pattern="*.dylib*", dst="lib", src=".", keep_path=False)      
-
-        # Copying tests
-        if self.options.build_tests:
-            self.copy(pattern="kerchow_tests", dst="bin", src="bin", keep_path=False)      
+        self.copy("*.h", dst="include", src="src", keep_path=True)
+        self.copy("*.lib", dst="lib", keep_path=False)
+        self.copy("*.dll", dst="bin", keep_path=False)
+        self.copy("*.so", dst="lib", keep_path=False)
+        self.copy("*.dylib", dst="lib", keep_path=False)
+        self.copy("*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.includedirs = ["include"]
-        self.cpp_info.libs = ["kerchow"]
+        self.cpp_info.libs = ["skizzay_kerchow"]
 
-    @property
-    def _build_tests_flag(self):
-        return "-DBUILD_TESTS=TRUE" if self.options.build_tests else ""
-
-    @property
-    def _build_shared_flag(self):
-        return "-DBUILD_SHARED_LIBS=ON" if self.options.shared else ""
-
-    @property
-    def _extra_cmake_defines(self):
-        return ' '.join([x for x in [self._build_tests_flag, self._build_shared_flag] if x])

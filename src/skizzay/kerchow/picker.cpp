@@ -1,14 +1,13 @@
-// vim: sw=3 ts=3 expandtab smartindent autoindent cindent
-#include "kerchow/picker.h"
+#include "skizzay/kerchow/picker.h"
 #include <cstdlib>
 #include <sstream>
 
 namespace {
 
 inline unsigned int generate_seed_for_picker() {
-   char *buffer = ::getenv("KERCHOW_SEED");
+   char *buffer = ::getenv("SKIZZAY_KERCHOW_SEED");
 
-   if (buffer) {
+   if (nullptr != buffer) {
       unsigned int value;
       std::istringstream s{buffer};
 
@@ -32,8 +31,10 @@ inline unsigned int generate_seed_for_picker() {
 }
 
 
+namespace skizzay {
 namespace kerchow {
 
 random_picker picker{generate_seed_for_picker()};
 
+}
 }

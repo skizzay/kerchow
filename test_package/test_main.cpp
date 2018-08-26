@@ -1,12 +1,10 @@
-// vim: sw=3 ts=3 expandtab smartindent autoindent cindent
-#include <iostream>
-#include "kerchow/kerchow.h"
+#include "skizzay/kerchow/kerchow.h"
 #include <algorithm>
 #include <gtest/gtest.h>
 
 namespace {
 
-using namespace kerchow;
+using namespace skizzay::kerchow;
 
 
 TEST(fuzzy_number_tests, uniform_distribution_provides_valid_range) {
