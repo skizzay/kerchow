@@ -16,6 +16,11 @@ template<class T,
 class fuzzy_iterator : std::iterator<std::input_iterator_tag, T> {
 public:
    typedef fuzzy_container<typename std::remove_const<T>::type, G> container_type;
+   typedef std::ptrdiff_t difference_type;
+   typedef T value_type;
+   typedef T & reference;
+   typedef T * pointer;
+   typedef std::input_iterator_tag iterator_category;
 
    inline fuzzy_iterator(container_type &c) :
       items_remaining{c.size()},
@@ -68,6 +73,13 @@ private:
 
 template<class T, class Generator>
 class fuzzy_container {
+   inline fuzzy_container(Generator &g, std::vector<T> &&values) noexcept :
+      generator{g},
+      values{std::move(values)}
+   {
+      sync_to_element_count();
+   }
+
 public:
    typedef Generator generator_type;
    typedef typename std::vector<T>::const_reference result_type;
@@ -86,24 +98,20 @@ public:
 
    template<class... ValueArgs>
    inline fuzzy_container(generator_type &g, ValueArgs && ... value_args) :
-      generator{g},
-      values{std::forward<ValueArgs>(value_args)...},
-      iteration_count{values.size()}
+      fuzzy_container{g, std::vector<T>(std::forward<ValueArgs>(value_args)...)}
    {
    }
 
    template<class U>
-   inline fuzzy_container(generator_type &g, const std::initializer_list<U> &value_args) :
-      generator{g},
-      values{value_args},
-      iteration_count{values.size()}
+   inline fuzzy_container(generator_type &g, std::initializer_list<U> const value_args) :
+      fuzzy_container{g, std::vector<T>(value_args)}
    {
    }
 
    inline result_type next() noexcept {
       assert(!empty() && "Cannot get result on empty container.");
 
-      if (values.size() > static_cast<size_type>(1)) {
+      if (values.size() > size_type(1)) {
          std::uniform_int_distribution<size_type> distribute{0, values.size() - 1};
          return values[distribute(generator)];
       }
@@ -111,7 +119,7 @@ public:
       return values[0];
    }
 
-   inline void set_iteration_count(size_type n) noexcept {
+   inline void set_iteration_count(size_type const n) noexcept {
       iteration_count = n;
    }
 
@@ -155,7 +163,7 @@ public:
       return cend();
    }
 
-   inline void push(const T &value) {
+   inline void push(T const &value) {
       values.push_back(value);
       ++iteration_count;
    }
