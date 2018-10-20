@@ -120,4 +120,18 @@ TEST(fuzzy_container_tests, iteration_over_container_iterates_the_size_of_contai
    ASSERT_EQ(expected, actual);
 }
 
+
+TEST(fuzzy_container_tests, container_size_matches_distance_of_iterators) {
+   // Arrange
+   std::vector<const char *> const values{{"hello", "world", "car", "boot", "run", "jump"}};
+   auto const target = picker.create_fuzzy_container<const char *>(std::begin(values), std::end(values));
+   std::size_t const expected = target.size();
+
+   // Act
+   std::size_t const actual = std::distance(std::begin(target), std::end(target));
+
+   // Assert
+   ASSERT_EQ(expected, actual);
+}
+
 }

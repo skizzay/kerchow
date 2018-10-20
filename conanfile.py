@@ -4,7 +4,7 @@ from conans.errors import ConanException
 
 class KerchowConan(ConanFile):
     name = "kerchow"
-    version = "2.0.1"
+    version = "2.0.2"
     license = "MIT"
     url = "https://github.com/skizzay/kerchow"
     description = "A library of data structures to simplify fuzz-testing"
